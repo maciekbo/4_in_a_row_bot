@@ -108,11 +108,11 @@ namespace bot {
             temp.move(i);
             if (pos.my_turn) scr = max(scr, go_wide(temp, depth + 1, scr));
             else             scr = min(scr, go_wide(temp, depth + 1, scr));
-            // if (pos.my_turn) {
-            //     if (scr > father_val) return scr;
-            // } else {
-            //     if (scr < father_val) return scr;
-            // }
+            if (pos.my_turn) {
+                if (scr > father_val) return scr;
+            } else {
+                if (scr < father_val) return scr;
+            }
         }
         return scr;
     }
@@ -123,7 +123,7 @@ namespace bot {
          if (pos.can_move(i)) {
             Board temp = pos;
             temp.move(i);
-            move = max(move, {go_wide(temp, 1, inf), i});
+            move = max(move, {go_wide(temp, 1, -inf), i});
         }
         return move.second;
     }
