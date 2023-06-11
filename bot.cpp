@@ -116,7 +116,7 @@ namespace bot {
         }
         return scr;
     }
-    int chose_move(Board pos) {
+    pair <int, int> chose_move(Board pos) {
         pair <int, int> move = {0, 0};
         // if (pos.my_turn) move = {}
         for (int i = 0; i < pos.size; i++) 
@@ -125,7 +125,7 @@ namespace bot {
             temp.move(i);
             move = max(move, {go_wide(temp, 1, -inf), i});
         }
-        return move.second;
+        return move;
     }
 }
 
@@ -145,10 +145,15 @@ int main() {
     }
     while (!(my_board.win() != 0 || my_board.draw())) {
         if (my_board.my_turn) {
-            my_board.move(bot::chose_move(my_board));
+            auto bot_move = bot::chose_move(my_board);
+            my_board.move(bot_move.second);
             system("clear");
             printf("1 2 3 4 5 6 7\n");
             my_board.print();
+            printf("The bot moved %d\n", bot_move.second + 1);
+            if (bot_move.first == 0) printf("The bot is unsure, if it can win.\n");
+            else if (bot_move.first > 0) printf("The bot is %d%% certain it can win.\n", bot_move.first * 5);
+            else printf("The bot is %d%% certain it will lose.\n", bot_move.first * -5);
         }
         if (my_board.win() || my_board.draw()) break;
         int my_move;
