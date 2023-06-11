@@ -133,17 +133,30 @@ int main() {
     bot::max_depth = 5;
     bot::accuracy = 10;
     Board my_board(7);
-    while (!(my_board.win() != 0 || my_board.draw())) {
-        my_board.move(bot::chose_move(my_board));
+    system("clear");
+    printf("Do you want to go first? Y/N\n");
+    char who_first;
+    cin >> who_first;
+    if (who_first == 'Y' || who_first == 'y') {
+        my_board.my_turn = false;
         system("clear");
         printf("1 2 3 4 5 6 7\n");
         my_board.print();
-        if (my_board.win()) break;
+    }
+    while (!(my_board.win() != 0 || my_board.draw())) {
+        if (my_board.my_turn) {
+            my_board.move(bot::chose_move(my_board));
+            system("clear");
+            printf("1 2 3 4 5 6 7\n");
+            my_board.print();
+        }
+        if (my_board.win() || my_board.draw()) break;
         int my_move;
         scanf("%d", &my_move);
         my_board.move(my_move - 1);
         system("clear");
         printf("1 2 3 4 5 6 7\n");
         my_board.print();
+        if (my_board.win() || my_board.draw()) break;
     }
 }
