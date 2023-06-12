@@ -93,7 +93,7 @@ namespace bot {
     }
     int go_wide(Board pos, int depth, int father_val) {
         int w = pos.win();
-        if (w != 0) return w * accuracy;
+        if (w != 0) return w * accuracy * 10;
         if (pos.draw()) return 0;
         int scr;
         if (depth == max_depth) {
@@ -130,8 +130,9 @@ namespace bot {
 }
 
 int main() {
+    ios_base::sync_with_stdio(0);
     bot::max_depth = 5;
-    bot::accuracy = 10;
+    bot::accuracy = 15;
     Board my_board(7);
     system("clear");
     printf("Do you want to go first? Y/N\n");
@@ -151,7 +152,9 @@ int main() {
             printf("1 2 3 4 5 6 7\n");
             my_board.print();
             printf("The bot moved %d\n", bot_move.second + 1);
-            printf("The bot is %d%% certain it can win.\n", (bot_move.first + bot::accuracy + 1) * 50 / (bot::accuracy + 1));
+            if (bot_move.first > 2 * bot::accuracy) printf("The bot is certain it will win\n");
+            else if (bot_move.first < -2 * bot::accuracy) printf("The bot is is certain you can win\n");
+            else printf("The bot is %d%% certain it can win.\n", (bot_move.first + bot::accuracy + 1) * 50 / (bot::accuracy + 1));
         }
         if (my_board.win() || my_board.draw()) break;
         int my_move;
