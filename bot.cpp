@@ -151,9 +151,7 @@ int main() {
             printf("1 2 3 4 5 6 7\n");
             my_board.print();
             printf("The bot moved %d\n", bot_move.second + 1);
-            if (bot_move.first == 0) printf("The bot is unsure, if it can win.\n");
-            else if (bot_move.first > 0) printf("The bot is %d%% certain it can win.\n", bot_move.first * (99 / bot::accuracy));
-            else printf("The bot is %d%% certain it will lose.\n", bot_move.first * (99 / bot::accuracy));
+            printf("The bot is %d%% certain it can win.\n", (bot_move.first + bot::accuracy + 1) * 50 / (bot::accuracy + 1));
         }
         if (my_board.win() || my_board.draw()) break;
         int my_move;
