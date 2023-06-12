@@ -82,9 +82,17 @@ namespace bot {
     int accuracy;
     int go_deep(Board pos) {
         int w = pos.win();
+        int iter = 0;
         while (w == 0) {
+            iter++;
+            if (iter > 50) return 0;
             int x = rand() % pos.size;
-            while (!pos.can_move(x)) x = (x + 1) % pos.size;
+            int iter2 = 0;
+            while (!pos.can_move(x)) {
+                iter++;
+                if (iter > 10) return 0;
+                x = (x + 1) % pos.size;
+            }
             pos.move(x);
             w = pos.win();
             if (pos.draw()) break;
@@ -159,7 +167,11 @@ int main() {
         if (my_board.win() || my_board.draw()) break;
         int my_move;
         printf("Your move is: ");
-        scanf("%d", &my_move);
+        while (true) {
+            scanf("%d", &my_move);
+            if (0 <= my_move && my_move <= 6) break;
+            printf("Invalid move. Type a number between 1 and 7, and then press enter.\n");
+        }
         my_board.move(my_move - 1);
         system("clear");
         printf("1 2 3 4 5 6 7\n");
