@@ -158,6 +158,7 @@ int main() {
         }
         if (my_board.win() || my_board.draw()) break;
         int my_move;
+        printf("Your move is: ");
         scanf("%d", &my_move);
         my_board.move(my_move - 1);
         system("clear");
