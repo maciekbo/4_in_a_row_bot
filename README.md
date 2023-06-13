@@ -1,4 +1,5 @@
 This is a bot to "connect 4" game writen by Maciej Boroń.
+Run the file 'bot' on Linux and 'win_bot.exe' on Windows.
 
 The human player uses 'O' and the computer uses 'X'.
 
