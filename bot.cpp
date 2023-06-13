@@ -1,5 +1,6 @@
 #include <iostream>
 #include <random>
+#include <chrono>
 #define inf 1'000'000'000
 #define p0 '.'
 #define p1 'X'
@@ -141,6 +142,7 @@ int main() {
     ios_base::sync_with_stdio(0);
     bot::max_depth = 5;
     bot::accuracy = 15;
+    srand(chrono::high_resolution_clock::now().time_since_epoch().count());
     Board my_board(7);
     system("clear");
     printf("Do you want to go first? Y/N\n");
@@ -169,7 +171,7 @@ int main() {
         printf("Your move is: ");
         while (true) {
             scanf("%d", &my_move);
-            if (0 <= my_move && my_move <= 6) break;
+            if (1 <= my_move && my_move <= 7) break;
             printf("Invalid move. Type a number between 1 and 7, and then press enter.\n");
         }
         my_board.move(my_move - 1);
