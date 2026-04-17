@@ -2,12 +2,87 @@
 #include <random>
 #include <chrono>
 #include <stack>
+
+using namespace std;
+
+template<class A, class B>
+ostream& operator<<(ostream& o, const pair<A, B>& p) {
+    return o << '(' << p.first << ", " << p.second << ')';
+}
+template<class A, class B, class C>
+ostream& operator<<(ostream& o, const tuple<A, B, C>& t) {
+    return o << '(' << get<0>(t) << ", " << get<1>(t) << ", " << get<2>(t) << ')';
+}
+template<class T>
+auto operator<<(ostream& o, const T& x) -> decltype(x.end(), o) {
+    o << '{';
+    int i = 0;
+    for (const auto& e : x) {
+        o << (", ") + 2 * !i++ << e;
+    }
+    return o << '}';
+}
+auto operator<<(ostream& o, const string& s) -> decltype(o) {
+    for (const auto& e : s) {
+        o << e;
+    }
+    return o;
+}
+#define red "\x1b[38;2;255;75;75m"
+#define blue "\x1b[38;2;75;75;255m"
+#define green "\x1b[38;2;75;255;75m"
+#define gray "\x1b[38;2;140;140;140m"
+#define cyan "\x1b[38;2;75;255;255m"
+#define yellow "\x1b[38;2;255;255;75m"
+#define violet "\x1b[38;2;190;100;255m"
+#define orange "\x1b[38;2;255;180;50m"
+#define reset "\x1b[0m"
+#define bold "\x1b[1m"
+#define underline "\x1b[4m"
+#define italic "\x1b[3m"
+#define strikethrough "\x1b[9m"
+#define invert "\x1b[7m"
+//#define DEBUG
+#ifdef DEBUG
+#define fastio()
+#define deb(x...) cerr << "[" #x "]: ", [](auto... $) {((cerr << $ << "; "), ...); }(x), cerr << reset << "\n"
+#define debug(c, x...) cerr << "[" #x "]: " << c, [](auto... $) {((cerr << $ << "; "), ...); }(x), cerr << reset << "\n"
+#else
+#define fastio() ios_base::sync_with_stdio(0); cin.tie(0);
+#define deb(...)
+#define debug(...)
+#endif
+#ifdef LOCAL
+#define asrt(x) if (!(x)) { cerr << red << bold << "Assertion failed: " << reset << italic << #x << reset << " in line " << __LINE__ << endl; exit(1); }
+#else
+#define asrt(x)
+#endif
+#define pii pair<int,int>
 #define inf 1'000'000'000
+#define llinf 2'000'000'000'000'000'000
+#define mod 998'244'353
+#define mod7 1'000'000'007
+#define mod9 1'000'000'009
+#define eps 0.00000000001
+#define all(x) x.begin(),x.end()
+#define rev(x) x.rbegin(),x.rend()
+#define decrease(x) x,vector<x>,greater<x>
+#define bits(x) ((x==0)?0:32-__builtin_clz(x))
+#define arrsize(x) (sizeof(x)/sizeof(x[0]))
 #define p0 '.'
 #define p1 'X'
 #define p2 'O'
-
-using namespace std;
+#define int long long
+typedef long long ll;
+typedef long double ld;
+int popcount(int x) {
+    int scr = 0;
+    while (x > 0) {
+        scr += x & 1;
+        x >>= 1;
+    }
+    return scr;
+}
 
 int random(int a, int b) {
     return rand() % (b - a + 1) + a;
