@@ -254,7 +254,7 @@ namespace bot {
     }
 
     pair <int, int> chose_move(Board pos) {
-        pair <int, int> move = {0, 0};
+        pair <int, int> move = {-llinf, 0};
         // if (pos.my_turn) move = {}
         for (int i = 0; i < pos.width; i++) 
          if (pos.can_move(i)) {
