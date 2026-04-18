@@ -174,6 +174,7 @@ class Board {
         int last = moves.top();
         moves.pop();
         state[current_height[last]][last] = p0;
+        current_height[last]++;
         my_turn = !my_turn;
     }
 
