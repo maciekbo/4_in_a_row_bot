@@ -1,6 +1,7 @@
 #include <iostream>
 #include <random>
 #include <chrono>
+#include <algorithm>
 #include <stack>
 
 using namespace std;
@@ -92,13 +93,13 @@ class Board {
     public:
     static const int width = 7, height = 6;
 
-    private:
+    // private:
     string state[height];
     int current_height[width];
     stack <int> moves;
 
     bool valid_move (int i, int j) {
-        return 1 <= i && i <= height && 1 <= j && j <= width;
+        return 0 <= i && i < height && 0 <= j && j < width;
     };
     bool row(int i, int j) {
         if (width - 3 <= j || !valid_move(i, j)) return false;
@@ -146,13 +147,18 @@ class Board {
 
     void print() {
         for (int i = 0; i < height; i++) {
-            cout << state[i] << "\n";
+            for (char c: state[i]) {
+                if (c == p1) cout << red;
+                if (c == p2) cout << green;
+                cout << c << " " << reset;
+            }
+            cout << "\n";
         }
     }
 
     bool can_move(int x) {
         if (x < 0 || width <= x) return false;
-        return current_height[x] > 0;
+        return state[0][x] == p0;
     }
 
     void move(int x) {
@@ -178,12 +184,11 @@ class Board {
     }
 
     int win() {
-        if (moves.empty()) return 0;
-        int i = current_height[moves.top()], j = moves.top();
-        for (int d: {0, 1, 2, 3}) {
-            if (row(i, j - d) || column(i - d, j) || left_diagonal(i - d, j - d) || right_diagonal(i - d, j + d))
-             return (state[i][j] == p1)? 1: -1;
-        }
+        if (moves.size() < 7) return 0;
+        for (int i = 0; i < height; i++) 
+         for (int j = 0; j < width; j++)
+         if (row(i, j) || column(i, j) || left_diagonal(i, j) || right_diagonal(i, j))
+         return (state[i][j] == p1)? 1: -1;
         return 0;
     }
 };
@@ -191,6 +196,14 @@ class Board {
 namespace bot {
     int max_depth;
     int accuracy;
+
+    vector <int> move_priority;
+    void create_move_priority(int width) {
+        move_priority.resize(width);
+        iota(all(move_priority), 0);
+        sort(all(move_priority), [&](int a, int b) {return abs(a - width / 2) < abs(b - width / 2);});
+        debug(blue, move_priority);
+    }
 
     int go_deep(Board pos) {
         int w = pos.win();
@@ -212,9 +225,9 @@ namespace bot {
         return w;
     }
 
-    int go_wide(Board pos, int depth, int father_val) {
+    int go_wide(Board& pos, int depth, int father_val) {
         int w = pos.win();
-        if (w != 0) return w * accuracy * 10;
+        if (w != 0) return w * inf;
         if (pos.draw()) return 0;
         int scr;
         if (depth == max_depth) {
@@ -223,12 +236,13 @@ namespace bot {
             return scr;
         }
         scr = pos.my_turn? -inf: inf;
-        for (int i = 0; i < pos.width; i++) 
+        for (int i: move_priority) 
          if (pos.can_move(i)) {
             Board temp = pos;
             temp.move(i);
             if (pos.my_turn) scr = max(scr, go_wide(temp, depth + 1, scr));
             else             scr = min(scr, go_wide(temp, depth + 1, scr));
+            temp.undo_move();
             if (pos.my_turn) {
                 if (scr > father_val) return scr;
             } else {
@@ -251,12 +265,13 @@ namespace bot {
     }
 }
 
-int main() {
+signed main() {
     bot::max_depth = 5;
     bot::accuracy = 15;
-    srand(chrono::high_resolution_clock::now().time_since_epoch().count());
+    // srand(chrono::high_resolution_clock::now().time_since_epoch().count());
     Board my_board;
     system("clear");
+    bot::create_move_priority(my_board.width);
 
     cout << "Do you want to go first? Y/N\n";
     char who_first;
@@ -271,16 +286,20 @@ int main() {
     while (!(my_board.win() != 0 || my_board.draw())) {
         if (my_board.my_turn) {
             auto bot_move = bot::chose_move(my_board);
+            debug(orange, my_board.can_move(bot_move.second));
+            debug(orange, my_board.current_height[bot_move.second]);
             my_board.move(bot_move.second);
-            system("clear");
+            debug(orange, my_board.current_height[bot_move.second]);
+            // system("clear");
             cout << "1 2 3 4 5 6 7\n";
             my_board.print();
             cout << "The bot moved " << bot_move.second + 1 << "\n";
-            if (bot_move.first > 2 * bot::accuracy) cout << "The bot is certain it will win\n";
-            else if (bot_move.first < -2 * bot::accuracy) cout << "The bot is is certain you can win\n";
-            else cout << "The bot is " << (bot_move.first + bot::accuracy + 1) * 50 / (bot::accuracy + 1) << " certain it can win.\n";
+            // if (bot_move.first > 2 * bot::accuracy) cout << "The bot is certain it will win\n";
+            // else if (bot_move.first < -2 * bot::accuracy) cout << "The bot is is certain you can win\n";
+            // else cout << "The bot is " << (bot_move.first + bot::accuracy + 1) * 50 / (bot::accuracy + 1) << "% certain it can win.\n";
         }
         if (my_board.win() || my_board.draw()) break;
+        debug(green, my_board.win());
 
         string input;
         int my_move;
@@ -288,13 +307,19 @@ int main() {
         while (true) {
             getline(cin, input);
             my_move = atoi(input.c_str());
-            if (1 <= my_move && my_move <= 7) break;
+            if (1 <= my_move && my_move <= 7)
+             if (my_board.can_move(my_move - 1))
+             break;
             cout << "Invalid move. Type a number between 1 and 7, and then press enter.\n";
         }
+        debug(orange, my_board.can_move(my_move - 1));
         my_board.move(my_move - 1);
         system("clear");
         cout << "1 2 3 4 5 6 7\n";
         my_board.print();
         if (my_board.win() || my_board.draw()) break;
+        debug(yellow, my_board.win());
     }
+
+    return 0;
 }
